@@ -61,36 +61,40 @@ const UploadCard = forwardRef<UploadCardHandle, Props>(({title, icon, image, set
         // ✅ 이미지 압축 옵션 설정
         // 이 옵션으로 대부분의 이미지가 1MB 미만(주로 0.5MB 이하)이 됩니다.
         const options = {
-            maxSizeMB: 0.3,           // 최대 파일 크기 (1MB)
-            maxWidthOrHeight: 1024, // 최대 너비 또는 높이 (1024px)
-            useWebWorker: true,     // 성능 향상을 위해 웹 워커 사용
+            maxSizeMB: 0.3,
+            maxWidthOrHeight: 1024,
+            useWebWorker: true,
+            // ✅ [수정] 파일 타입을 JPEG로 강제합니다. (압축률 향상 및 표준화)
+            fileType: 'image/jpeg', 
         };
 
         try {
             console.log(`압축 전 파일 크기: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
 
-            // 1. 이미지 압축 (await)
             const compressedFile = await imageCompression(file, options);
 
             console.log(`압축 후 파일 크기: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+
+            // ✅ [추가] 압축된 파일이 0바이트인지 확인합니다.
+            if (compressedFile.size === 0) {
+                // 0바이트 파일이면 '파일 읽기 오류' 대신 더 명확한 에러를 발생시킵니다.
+                throw new Error("압축 결과 파일 크기가 0입니다. (압축 실패)");
+            }
             
-            // 2. Base64 변환 (await, 헬퍼 함수 사용)
             const base64Image = await fileToBase64(compressedFile);
 
-            // 3. 모든 작업 성공 시 상태 업데이트
             setImage(base64Image);
 
         } catch (error) {
-            // 🚨 이제 압축 오류와 파일 읽기 오류 모두 여기서 처리됩니다.
             console.error('이미지 처리 중 오류 발생:', error);
 
             let errorMessage = "이미지를 처리하는 중 오류가 발생했습니다. 다른 파일을 시도해 주세요.";
             
-            // [object ProgressEvent]와 같은 객체 대신 명확한 메시지 표시
+            // ✅ [수정] 우리가 발생시킨 에러를 포함하여 더 명확한 메시지 표시
             if (error instanceof Error) {
-                errorMessage += ` (${error.message})`;
+                errorMessage = error.message; // "압축 결과 파일 크기가 0입니다."
             } else if (error instanceof ProgressEvent) {
-                errorMessage += " (파일 읽기 오류)";
+                errorMessage = "파일 읽기 오류가 발생했습니다. (ProgressEvent)";
             }
 
             alert(errorMessage);
