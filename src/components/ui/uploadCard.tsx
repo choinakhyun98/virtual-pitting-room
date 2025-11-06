@@ -50,7 +50,7 @@ const UploadCard = forwardRef<UploadCardHandle, Props>(({title, icon, image, set
         // ✅ 이미지 압축 옵션 설정
         // 이 옵션으로 대부분의 이미지가 1MB 미만(주로 0.5MB 이하)이 됩니다.
         const options = {
-            maxSizeMB: 1,           // 최대 파일 크기 (1MB)
+            maxSizeMB: 0.3,           // 최대 파일 크기 (1MB)
             maxWidthOrHeight: 1024, // 최대 너비 또는 높이 (1024px)
             useWebWorker: true,     // 성능 향상을 위해 웹 워커 사용
         };
