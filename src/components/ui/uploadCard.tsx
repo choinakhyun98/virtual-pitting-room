@@ -16,6 +16,17 @@ export interface UploadCardHandle {
   clearFileInput: () => void;
 }
 
+// ✅ [새로 추가] FileReader를 Promise로 감싸는 헬퍼 함수
+// 이 함수는 컴포넌트 외부에 위치시켜도 됩니다.
+const fileToBase64 = (file: File | Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error); // 👈 에러가 발생하면 catch로 전달
+    });
+};
+
 const UploadCard = forwardRef<UploadCardHandle, Props>(({title, icon, image, setImage},ref) => {
 
     const fileRef = useRef<HTMLInputElement>(null);
@@ -58,23 +69,32 @@ const UploadCard = forwardRef<UploadCardHandle, Props>(({title, icon, image, set
         try {
             console.log(`압축 전 파일 크기: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
 
-            // ✅ 이미지 압축 실행
+            // 1. 이미지 압축 (await)
             const compressedFile = await imageCompression(file, options);
 
             console.log(`압축 후 파일 크기: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
             
-            // ✅ 압축된 파일을 Base64로 변환
-            const reader = new FileReader();
-            reader.onload = ()=>{
-                setImage(reader.result as string);
-            }
-            // 원본 'file' 대신 'compressedFile'을 읽도록 수정
-            reader.readAsDataURL(compressedFile);
+            // 2. Base64 변환 (await, 헬퍼 함수 사용)
+            const base64Image = await fileToBase64(compressedFile);
+
+            // 3. 모든 작업 성공 시 상태 업데이트
+            setImage(base64Image);
 
         } catch (error) {
-            console.error('이미지 압축 중 오류 발생:', error);
-            alert('이미지를 처리하는 중 오류가 발생했습니다. 다른 파일을 시도해 주세요.' + error);
-            // ✅ 오류 발생 시 파일 입력 초기화
+            // 🚨 이제 압축 오류와 파일 읽기 오류 모두 여기서 처리됩니다.
+            console.error('이미지 처리 중 오류 발생:', error);
+
+            let errorMessage = "이미지를 처리하는 중 오류가 발생했습니다. 다른 파일을 시도해 주세요.";
+            
+            // [object ProgressEvent]와 같은 객체 대신 명확한 메시지 표시
+            if (error instanceof Error) {
+                errorMessage += ` (${error.message})`;
+            } else if (error instanceof ProgressEvent) {
+                errorMessage += " (파일 읽기 오류)";
+            }
+
+            alert(errorMessage);
+            
             if (fileRef.current) {
               fileRef.current.value = '';
             }
