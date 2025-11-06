@@ -73,7 +73,7 @@ const UploadCard = forwardRef<UploadCardHandle, Props>(({title, icon, image, set
 
         } catch (error) {
             console.error('이미지 압축 중 오류 발생:', error);
-            alert('이미지를 처리하는 중 오류가 발생했습니다. 다른 파일을 시도해 주세요.');
+            alert('이미지를 처리하는 중 오류가 발생했습니다. 다른 파일을 시도해 주세요.' + error);
             // ✅ 오류 발생 시 파일 입력 초기화
             if (fileRef.current) {
               fileRef.current.value = '';
