@@ -28,9 +28,10 @@ export async function imageCreator(userImage: string,clothImage: string) {
     { text: `
         Combine the two provided images. 
         In the final result, the person from the first image should be realistically wearing the clothing shown in the second image. 
-        Ensure that the fit, lighting, and perspective look natural and seamless. 
-        Do not alter the person’s face, body shape, or pose—only overlay the clothing to look like they are truly wearing it. 
-        Return a photorealistic, high-quality output suitable for a virtual fitting room preview.
+        Ensure that the fit, lighting, and perspective look natural and seamless, as if the person is truly wearing the outfit in a real-world fitting room setting. 
+        Do not alter the person’s face, body shape, or pose—only apply the clothing to look like they are genuinely wearing it. 
+        The clothing should drape and conform to the person's body in a photorealistic manner, taking into account fabric textures and wrinkles. 
+        Return a high-quality, photorealistic output suitable for a virtual fitting room preview, with a clean background.
     ` },
   ];
 

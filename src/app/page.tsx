@@ -34,7 +34,7 @@ export default function Home() {
       setResultImage(result);
     } catch (error) {
       console.error(error);
-      alert("이미지 생성 중 오류가 발생했습니다.");
+      alert("이미지 생성 중 오류가 발생했습니다. error: " + error);
     } finally {
       setIsLoading(false);
     }
