@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://my-fitting-room.vercel.app/sitemap.xml

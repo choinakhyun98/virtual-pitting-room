@@ -9,6 +9,17 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "가상 피팅룸",
   description: "간편하게 직접 입어보지 않고 고를 수 있도록 도와드리겠습니다.",
+  keywords:['fitting room','피팅룸','가상피팅','가상피팅룸','virtual fitting room','virtual fitting'],
+  metadataBase: new URL("https://my-fitting-room.vercel.app"),
+  openGraph:{
+    siteName: '가상 피팅룸',
+    images:{
+      url:"/icon.png"
+    },
+  },
+  icons:{
+    icon: "/icon.png"
+  },
   verification: {
     google: "nRYw8EnECkgngEq83dfiuFqakKQM-A8rnhgmxN9CuPw", 
   },
